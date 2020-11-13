@@ -34,6 +34,13 @@
             API_URL = data;
         });
 
+        let lgn = sessionStorage.getItem('userToken');
+        debugger;
+        if (lgn == null) {
+            alert('Please login first');
+            window.location.href = '@Url.Action("Index", "Login")';
+        }
+
         $("#txtDateStart").datepicker(
             {
                 format: 'dd-M-yyyy',
@@ -67,7 +74,7 @@
 
                         var t = $('#tblReconcile').DataTable();
                         var giCount = 1;
-                        
+
                         $.each(result.returnData, function (key, value) {
                             debugger;
                             var statusMatch = "Not Matched";
@@ -78,7 +85,7 @@
                         });
                     }
                     else {
-                        alert('Store Code not found');
+                        alert('Data not found');
                     }
                 }
             });

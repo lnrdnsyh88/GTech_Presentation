@@ -2,17 +2,18 @@
     ViewData["Title"] = "Login Page";
 }
 
-<div class="text-center">
+
+<div class="text-center" id="unlogindiv" >
     <h2>Login</h2>
 
     <table class=" table text-center table-striped table-responsive">
         <tr>
             <td>UserName</td>
-            <td><input type="text" name="txtUserName" value="" /></td>
+            <td><input type="text" name="txtUserName" id="txtUserName" value="" /></td>
         </tr>
         <tr>
             <td>Password</td>
-            <td><input type="password" name="txtPassword" value="" /></td>
+            <td><input type="password" name="txtPassword" id="txtPassword" value="" /></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -21,8 +22,16 @@
                 <input type="button" name="btnRegister" id="btnRegister" class="button1" value="Register" onclick="window.location.href='@Url.Action("Register", "Login")'" />
             </td>
         </tr>
+        <tr>
+            <td colspan="2">User Demo : alan, Password : alan123</td>
+        </tr>
     </table>
 
+</div>
+
+<div class="text-center" id="logindiv">
+    <h2>Welcome, <label id="lblLogin"></label>.</h2>
+    <br />
 </div>
 
 <div class="text-center">
@@ -37,11 +46,67 @@
                 </tr>
             </thead>
         </table>
-    </div>
+    </div>sds
 </div>
 
 <script>
+    var API_URL = '';
+
     $(document).ready(function () {
         $('#tblUser').DataTable();
+
+        var url = '@Url.Action("connectionString", "Reconcile")';
+        debugger;
+        $.get(url, null, function (data) {
+            API_URL = data;
+        });
+
+        let lgn = sessionStorage.getItem('userToken');
+
+        if (lgn != null) {
+            $("#logindiv").show();
+            $("#unlogindiv").hide();
+
+           //$("#lblLogin").val(result.returnData.userName);
+        }
+        else {
+            $("#logindiv").hide();
+            $("#unlogindiv").show();
+        }
+
+        $("#btnLogin").click(function () {
+            debugger;
+
+            $.ajax({
+                url: API_URL + 'Users/GetUsersLogin',
+                data: JSON.stringify({ UserName: $.trim($("#txtUserName").val()), UserPassword: $.trim($("#txtPassword").val()) }),
+                method: 'POST',
+                crossDomain: true,
+                headers: { 'Access-Control-Allow-Origin': '*' },
+                contentType: "application/json",
+                datatype: 'json',
+                success: function (result) {
+                    debugger;
+                    if (result != null) {
+                        debugger;
+
+                        if (result.returnData.outputFlag == true) {
+                            alert(result.returnData.outputMessage);
+                            sessionStorage.setItem('userToken', result.returnData.outputToken);
+                            $("#lblLogin").html(result.returnData.userName);
+                            $("#logindiv").show();
+                            $("#unlogindiv").hide();
+                        }
+                        else {
+                            alert('login fail');
+                        }
+
+                    }
+                    else {
+                        alert('user not found');
+                    }
+                }
+            });
+        });
     });
 </script>

@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Login Page";
+}
+
+<div class="text-center">
+    <h2>Login</h2>
+
+    <table class=" table text-center table-striped table-responsive">
+        <tr>
+            <td>UserName</td>
+            <td><input type="text" name="txtUserName" value="" /></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" name="txtPassword" value="" /></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input type="button" name="btnLogin" id="btnLogin" class="button1" value="Login" />
+                <input type="button" name="btnRegister" id="btnRegister" class="button1" value="Register" onclick="window.location.href='@Url.Action("Register", "Login")'" />
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<div class="text-center">
+    <h2>User List</h2>
+
+    <div style=" width: 500px;">
+        <table id="tblUser" style="width:40%">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tblUser').DataTable();
+    });
+</script>

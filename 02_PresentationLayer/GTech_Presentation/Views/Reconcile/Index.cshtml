@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Reconcile Page";
+}
+
+<div class="text-center">
+    <h2>Reconcile </h2>
+
+    <div>
+        <div class="form-group">
+            Transation Date : <input type="text" name="txtDateStart" id="txtDateStart" value="" /> s/d <input type="text" name="txtDateEnd" id="txtDateEnd" value="" /> <input type ="button" name="btnSearch" id="btnSearch" value="Search" />
+        </div>
+        <table id="tblReconcile">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Transaction Date</th>
+                    <th>Transaction Number</th>
+                    <th>eCommerce</th>
+                    <th>Payment Gateway</th>
+                    <th>Bank Transfer</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script>
+    var API_URL = '';
+    $(document).ready(function () {
+        var url = '@Url.Action("connectionString", "Reconcile")';
+        debugger;
+        $.get(url, null, function (data) {
+            API_URL = data;
+        });
+
+        $("#txtDateStart").datepicker(
+            {
+                format: 'dd-M-yyyy',
+                autoclose: true
+            }
+        );
+
+        $("#txtDateEnd").datepicker(
+            {
+                format: 'dd-M-yyyy',
+                autoclose: true
+            }
+        );
+
+        $('#tblReconcile').DataTable();
+
+        $("#btnSearch").click(function () {
+            debugger;
+            $.ajax({
+                url: API_URL + 'Reconcile/GetReconcileTransaction',
+                data: JSON.stringify({ DateStart: $.trim($("#txtDateStart").val()), DateEnd: $.trim($("#txtDateEnd").val()) }),
+                method: 'POST',
+                crossDomain: true,
+                headers: { 'Access-Control-Allow-Origin': '*' },
+                contentType: "application/json",
+                datatype : 'json',
+                success: function (result) {
+                    debugger;
+                    if (result != null) {
+                        debugger;
+
+                        var t = $('#tblReconcile').DataTable();
+                        var giCount = 1;
+                        
+                        $.each(result.returnData, function (key, value) {
+                            debugger;
+                            var statusMatch = "Not Matched";
+                            if (value.isMatched == true)
+                                statusMatch = "Matched";
+                            t.row.add([giCount, value.transactionDate, addCommas(value.transactionNumber), addCommas(value.eCommerceAmount), addCommas(value.paymentGatewayAmount), addCommas(value.bankTransferAmount), statusMatch]).draw(false);
+                            giCount += 1;
+                        });
+                    }
+                    else {
+                        alert('Store Code not found');
+                    }
+                }
+            });
+        });
+    });
+
+    function addCommas(nStr) {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+</script>
